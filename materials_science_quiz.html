@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materials Science Interactive Quiz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .en-text {
+            font-family: 'Inter', sans-serif;
+            direction: ltr;
+            text-align: left;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                    <i class="fa-solid me-0 fa-flask text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-slate-900">اختبار علم المواد</h1>
+                    <p class="text-xs text-slate-500 font-medium">Materials Science Interactive Quiz</p>
+                </div>
+            </div>
+
+            <!-- Header Controls -->
+            <div class="flex items-center gap-3">
+                <!-- Instant Feedback Mode Toggle -->
+                <label class="inline-flex items-center cursor-pointer bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+                    <input type="checkbox" id="instant-feedback-toggle" class="sr-only peer" onchange="toggleInstantFeedback()">
+                    <span class="ml-2 me-2">التصحيح الفوري</span>
+                    <div class="relative w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-brand-600"></div>
+                </label>
+
+                <!-- Question Grid Quick Menu Trigger -->
+                <button onclick="toggleQuestionMap()" class="p-2 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="خريطة الأسئلة">
+                    <i class="fa-solid fa-th-large text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 flex-grow flex flex-col justify-center">
+
+        <!-- QUIZ SCREEN -->
+        <div id="quiz-screen" class="space-y-6">
+            
+            <!-- Progress & Stats Header -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-center justify-between text-sm font-bold text-slate-600">
+                    <span id="question-number-display">السؤال 1 من 40</span>
+                    <span id="answered-count-display" class="bg-brand-50 text-brand-700 px-3 py-1 rounded-full text-xs font-semibold">المجاب: 0 / 40</span>
+                </div>
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-brand-600 h-2.5 rounded-full transition-all duration-300" style="width: 2.5%"></div>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6 relative overflow-hidden">
+                <div class="flex items-start justify-between gap-4">
+                    <span class="inline-block px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold uppercase tracking-wider">
+                        Question <span id="q-id-tag">1</span>
+                    </span>
+                    <button onclick="bookmarkQuestion()" id="bookmark-btn" class="text-slate-400 hover:text-amber-500 transition text-lg">
+                        <i class="fa-regular fa-bookmark"></i>
+                    </button>
+                </div>
+
+                <!-- Question Text in English -->
+                <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-900 en-text leading-relaxed">
+                    Question text will appear here...
+                </h2>
+
+                <!-- Options List -->
+                <div id="options-container" class="space-y-3">
+                    <!-- Options injected via JavaScript -->
+                </div>
+
+                <!-- Instant Explanation Box (Visible only when instant feedback is ON and option selected) -->
+                <div id="instant-explanation" class="hidden p-4 rounded-xl border text-sm leading-relaxed transition-all">
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex items-center justify-between gap-4">
+                <button id="prev-btn" onclick="navigateQuestion(-1)" class="px-5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-slate-700 text-sm transition flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span>السابق</span>
+                </button>
+
+                <div class="flex items-center gap-2">
+                    <button id="next-btn" onclick="navigateQuestion(1)" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-500/20 transition flex items-center gap-2">
+                        <span>التالي</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+
+                    <button id="submit-btn" onclick="confirmSubmit()" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-500/20 transition flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>إنهاء وتصحيح</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN (Hidden by default) -->
+        <div id="results-screen" class="hidden space-y-8 py-4">
+            <!-- Score Card -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-md p-8 text-center space-y-6 relative overflow-hidden">
+                <div class="inline-flex p-4 rounded-full bg-brand-50 text-brand-600 mb-2">
+                    <i class="fa-solid fa-trophy text-4xl"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">نتيجة الاختبار</h2>
+                
+                <div class="flex justify-center items-baseline space-x-2 space-x-reverse">
+                    <span id="final-score" class="text-5xl font-black text-brand-600">0</span>
+                    <span class="text-2xl font-bold text-slate-400">/ 40</span>
+                </div>
+
+                <!-- Percentage & Badge -->
+                <div class="flex justify-center">
+                    <span id="score-percentage" class="px-4 py-1.5 rounded-full text-base font-bold bg-slate-100 text-slate-700">
+                        0%
+                    </span>
+                </div>
+
+                <p id="performance-feedback" class="text-slate-600 font-medium text-sm sm:text-base max-w-md mx-auto">
+                    ممتاز! لقد أتممت الإجابة على جميع الأسئلة.
+                </p>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap justify-center gap-4 pt-4">
+                    <button onclick="restartQuiz()" class="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition shadow-lg shadow-brand-500/20 flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>إعادة الامتحان</span>
+                    </button>
+                    <button onclick="filterResults('all')" class="px-5 py-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-slate-700 transition">
+                        عرض كافة الإجابات
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Buttons for Review -->
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <h3 class="font-bold text-slate-900 text-lg">مراجعة الإجابات التفصيلية</h3>
+                <div class="flex gap-2">
+                    <button onclick="filterResults('all')" id="filter-all-btn" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-brand-600 text-white">الكل</button>
+                    <button onclick="filterResults('wrong')" id="filter-wrong-btn" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">الأخطاء فقط</button>
+                </div>
+            </div>
+
+            <!-- Detailed Answers List -->
+            <div id="results-details-container" class="space-y-4">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- QUESTION MAP MODAL -->
+    <div id="question-map-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                <h3 class="font-bold text-slate-800">خريطة الأسئلة (40 سؤال)</h3>
+                <button onclick="toggleQuestionMap()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-grow">
+                <div id="question-grid" class="grid grid-cols-5 sm:grid-cols-8 gap-2">
+                    <!-- Grid numbers injected via JS -->
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-around text-xs font-semibold text-slate-600">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-brand-600"></span>
+                    <span>الحالي</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    <span>تمت الإجابة</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-slate-200"></span>
+                    <span>غير مجاب</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>Materials Science Quiz App • 40 Questions • Interactive Prep Tool</p>
+    </footer>
+
+    <!-- QUIZ SCRIPT -->
+    <script>
+        const questionsData = [
+            {
+                id: 1,
+                question: "How can some chemicals and salts be obtained from seawater?",
+                options: [
+                    "By smelting mineral ores",
+                    "By cutting timber",
+                    "By evaporating seawater",
+                    "By molding epoxy"
+                ],
+                correct: 2, // Index 2 -> C
+                explanation: "Chemicals and salts like sodium chloride are extracted from ocean water primarily through evaporation."
+            },
+            {
+                id: 2,
+                question: "How are ceramics described in the lecture?",
+                options: [
+                    "Long chains of repeating molecules",
+                    "Hard inorganic compounds formed between metallic and non-metallic elements",
+                    "Materials made only from carbon fibers",
+                    "Pure elements with metallic bonds"
+                ],
+                correct: 1, // B
+                explanation: "Ceramics are defined as inorganic, non-metallic compounds formed between metallic and non-metallic elements."
+            },
+            {
+                id: 3,
+                question: "Natural rubber is obtained as latex from which source?",
+                options: [
+                    "Seawater",
+                    "Iron ore",
+                    "Rubber trees",
+                    "Silica sand"
+                ],
+                correct: 2, // C
+                explanation: "Natural rubber is harvested as latex fluid from rubber trees (biological source)."
+            },
+            {
+                id: 4,
+                question: "Which activity is an example of extraction?",
+                options: [
+                    "Molding a finished plastic part",
+                    "Assembling a machine",
+                    "Machining a steel component",
+                    "Drilling for oil"
+                ],
+                correct: 3, // D
+                explanation: "Drilling for oil is an initial extraction stage where natural raw resources are removed from the earth."
+            },
+            {
+                id: 5,
+                question: "Which activity best represents manufacturing?",
+                options: [
+                    "Mining ore from the ground",
+                    "Extracting nitrogen from air",
+                    "Cutting timber in a forest",
+                    "Machining, molding, or assembling processed material"
+                ],
+                correct: 3, // D
+                explanation: "Manufacturing takes refined bulk materials and shapes or assembles them into final products."
+            },
+            {
+                id: 6,
+                question: "What process is used to extract metals such as iron and copper from ores?",
+                options: [
+                    "Weaving natural fibers",
+                    "Evaporating seawater",
+                    "Smelting at high temperatures",
+                    "Freezing crude oil"
+                ],
+                correct: 2, // C
+                explanation: "Smelting uses high heat and chemical reducing agents to melt and extract pure metals from mineral ores."
+            },
+            {
+                id: 7,
+                question: "In a composite, what is the role of the matrix and reinforcement?",
+                options: [
+                    "The matrix combines with a reinforcing element such as glass or carbon fibers",
+                    "The matrix is always a natural fiber",
+                    "Both must be pure metals",
+                    "The reinforcement dissolves completely into the matrix"
+                ],
+                correct: 0, // A
+                explanation: "A composite consists of a continuous matrix phase binding a structural reinforcing phase (like fibers)."
+            },
+            {
+                id: 8,
+                question: "Which of the following is an example of a thermosetting plastic?",
+                options: [
+                    "Aluminum",
+                    "Epoxy",
+                    "Nylon",
+                    "Polyethylene"
+                ],
+                correct: 1, // B
+                explanation: "Epoxy is a classic thermosetting polymer that crosslinks permanently upon curing."
+            },
+            {
+                id: 9,
+                question: "What happens to Nitinol when heated, as described in the lecture?",
+                options: [
+                    "It returns to its original shape",
+                    "It permanently melts at room temperature",
+                    "It becomes a natural rubber",
+                    "It turns into silica sand"
+                ],
+                correct: 0, // A
+                explanation: "Nitinol is a shape memory alloy (SMA) that recovers its pre-deformed shape upon heating."
+            },
+            {
+                id: 10,
+                question: "Which elements are mentioned as semiconductor materials?",
+                options: [
+                    "Calcium and sodium",
+                    "Iron and copper",
+                    "Carbon and sulfur",
+                    "Silicon and germanium"
+                ],
+                correct: 3, // D
+                explanation: "Silicon (Si) and Germanium (Ge) are elemental semiconductors foundational to microelectronics."
+            },
+            {
+                id: 11,
+                question: "What happens during refining and processing?",
+                options: [
+                    "Materials are only painted",
+                    "Finished products are always dismantled",
+                    "Resources are harvested from animals",
+                    "Raw resources are converted into usable bulk materials"
+                ],
+                correct: 3, // D
+                explanation: "Refining converts raw extracted minerals/petroleum into standard bulk materials like steel ingots or resin pellets."
+            },
+            {
+                id: 12,
+                question: "Which of the following is listed as a ceramic example?",
+                options: [
+                    "Alumina",
+                    "Polyethylene",
+                    "Nitinol",
+                    "Cotton"
+                ],
+                correct: 0, // A
+                explanation: "Alumina (Aluminum Oxide, Al2O3) is a widely used technical ceramic material."
+            },
+            {
+                id: 13,
+                question: "What is the example of a shape memory alloy given in the lecture?",
+                options: [
+                    "Nitinol",
+                    "Stainless steel",
+                    "Alumina",
+                    "Cast iron"
+                ],
+                correct: 0, // A
+                explanation: "Nitinol (Nickel-Titanium alloy) is the premier shape memory alloy example."
+            },
+            {
+                id: 14,
+                question: "What defines a ferrous metal?",
+                options: [
+                    "It contains no metallic elements",
+                    "It is made only from polymers",
+                    "Iron is its prime constituent",
+                    "It must be transparent"
+                ],
+                correct: 2, // C
+                explanation: "Ferrous metals are alloys where Iron (Fe) is the primary base element."
+            },
+            {
+                id: 15,
+                question: "Which natural fiber is grown as a crop?",
+                options: [
+                    "Silk",
+                    "Cotton",
+                    "Natural rubber",
+                    "Wool"
+                ],
+                correct: 1, // B
+                explanation: "Cotton is an agricultural crop supplying natural cellulose fibers."
+            },
+            {
+                id: 16,
+                question: "Which material is classified as non-ferrous in the lecture?",
+                options: [
+                    "Copper",
+                    "Cast iron",
+                    "Stainless steel",
+                    "Carbon steel"
+                ],
+                correct: 0, // A
+                explanation: "Copper contains no iron and is classified as a non-ferrous metal."
+            },
+            {
+                id: 17,
+                question: "Which four components are interdependent in the Materials Science Tetrahedron?",
+                options: [
+                    "Processing, structure, properties, and performance",
+                    "Strength, hardness, corrosion, density",
+                    "Extraction, mining, drilling, harvesting",
+                    "Mass, volume, color, price"
+                ],
+                correct: 0, // A
+                explanation: "The central paradigm of materials engineering links Processing, Structure, Properties, and Performance."
+            },
+            {
+                id: 18,
+                question: "Which of the following is a biological source of engineering materials?",
+                options: [
+                    "Managed forests",
+                    "Petroleum wells",
+                    "Atmospheric gases",
+                    "Iron ore mines"
+                ],
+                correct: 0, // A
+                explanation: "Managed forests provide biological raw materials like timber, cellulose, and natural resins."
+            },
+            {
+                id: 19,
+                question: "Which statement describes thermosetting plastics?",
+                options: [
+                    "They can always be remelted repeatedly",
+                    "Harvested from animals",
+                    "Pure metals",
+                    "They harden irreversibly after an initial chemical reaction"
+                ],
+                correct: 3, // D
+                explanation: "Thermosets decompose rather than melt when heated after cross-linking."
+            },
+            {
+                id: 20,
+                question: "What are the three stages in the raw material lifecycle?",
+                options: [
+                    "Melting, freezing, evaporation",
+                    "Extraction, refining and processing, manufacturing",
+                    "Design, testing, disposal",
+                    "Mining, corrosion, recycling"
+                ],
+                correct: 1, // B
+                explanation: "The material lifecycle proceeds sequentially: Extraction -> Refining/Processing -> Manufacturing."
+            },
+            {
+                id: 21,
+                question: "What is a material according to the lecture?",
+                options: [
+                    "A substance with mass and volume used to create or manufacture items",
+                    "A substance that has no physical presence",
+                    "Only in laboratories",
+                    "Only naturally occurring metal"
+                ],
+                correct: 0, // A
+                explanation: "In engineering, a material is physical matter utilized for structural or functional applications."
+            },
+            {
+                id: 22,
+                question: "Which of the following is a ferrous material?",
+                options: [
+                    "Aluminum",
+                    "Titanium",
+                    "Copper",
+                    "Cast iron"
+                ],
+                correct: 3, // D
+                explanation: "Cast iron is an iron-carbon alloy containing >2% carbon."
+            },
+            {
+                id: 23,
+                question: "What is the role of characterization in the Materials Science Tetrahedron framework?",
+                options: [
+                    "Raw material source",
+                    "Replaces processing",
+                    "It serves as a foundational tool to analyze the components",
+                    "Type of thermoplastic"
+                ],
+                correct: 2, // C
+                explanation: "Characterization provides analytical evaluation (microscopy, spectroscopy) of structure and properties."
+            },
+            {
+                id: 24,
+                question: "Which of the following is a thermoplastic?",
+                options: [
+                    "Phenolic resin",
+                    "Epoxy resin",
+                    "Polyethylene",
+                    "Tungsten carbide"
+                ],
+                correct: 2, // C
+                explanation: "Polyethylene softens when heated and hardens when cooled repeatedly without chemical breakdown."
+            },
+            {
+                id: 25,
+                question: "From where are most metals obtained before extraction and refining?",
+                options: [
+                    "Cotton crops",
+                    "Rubber tree latex",
+                    "Atmospheric oxygen",
+                    "Mineral-rich ores"
+                ],
+                correct: 3, // D
+                explanation: "Metals naturally occur bound in geological mineral ores (oxides, sulfides, carbonates)."
+            },
+            {
+                id: 26,
+                question: "According to the lecture, where are polymers and composites mostly synthesized?",
+                options: [
+                    "Only in forests",
+                    "Inside mineral-rich ores",
+                    "Only in ocean water",
+                    "Laboratories or factories"
+                ],
+                correct: 3, // D
+                explanation: "Synthetic polymers and advanced composites are manufactured artificially in industrial chemical plants."
+            },
+            {
+                id: 27,
+                question: "Which of the following is a major geological source of engineering materials?",
+                options: [
+                    "Laboratory air",
+                    "Living organisms only",
+                    "The Earth's crust",
+                    "Sunlight"
+                ],
+                correct: 2, // C
+                explanation: "The Earth's crust supplies ores, minerals, stone, and crude hydrocarbons."
+            },
+            {
+                id: 28,
+                question: "Which raw materials are commonly used to produce ceramics and glass?",
+                options: [
+                    "Copper ore and rubber latex",
+                    "Clay, silica sand, limestone, and feldspar",
+                    "Cotton, hemp, and flax",
+                    "Nitrogen and oxygen only"
+                ],
+                correct: 1, // B
+                explanation: "Ceramics and glasses are formulated primarily from silicate minerals, sand, clay, and carbonate compounds."
+            },
+            {
+                id: 29,
+                question: "Which of the following is an example of a composite mentioned in the lecture?",
+                options: [
+                    "Pure copper",
+                    "Wool",
+                    "Silica sand",
+                    "Fiberglass"
+                ],
+                correct: 3, // D
+                explanation: "Fiberglass consists of glass fiber reinforcement embedded in a polymer matrix."
+            },
+            {
+                id: 30,
+                question: "What is a key characteristic of metals described in the lecture?",
+                options: [
+                    "They conduct electricity and heat well",
+                    "No metallic bonds",
+                    "Cannot be shaped",
+                    "Electrical insulators"
+                ],
+                correct: 0, // A
+                explanation: "Metals possess delocalized valence electrons, yielding high thermal and electrical conductivity."
+            },
+            {
+                id: 31,
+                question: "What is a composite material?",
+                options: [
+                    "A combination of two or more distinct materials that remain physically separate",
+                    "Natural plant fiber",
+                    "Remeltable polymer",
+                    "Single pure metal"
+                ],
+                correct: 0, // A
+                explanation: "Composites combine macroscopically distinct materials to achieve superior combined properties."
+            },
+            {
+                id: 32,
+                question: "Which is a property for which polymers are valued?",
+                options: [
+                    "Inability to resist chemicals",
+                    "Lightweight and easy to mold",
+                    "High compressive strength",
+                    "Extremely high density"
+                ],
+                correct: 1, // B
+                explanation: "Polymers offer low density (lightweight) and versatile processability into complex shapes."
+            },
+            {
+                id: 33,
+                question: "What is the basic structure of polymers?",
+                options: [
+                    "Metallic grains network",
+                    "Long, repeating chains of molecules",
+                    "Single unbonded atoms",
+                    "Layers of mineral ore"
+                ],
+                correct: 1, // B
+                explanation: "Polymers consist of long macromolecular chains built from repeating monomer units."
+            },
+            {
+                id: 34,
+                question: "What are smart materials designed to do?",
+                options: [
+                    "Convert all metals into polymers",
+                    "Actively respond to environmental stimuli",
+                    "Unaffected by environment",
+                    "Conduct heat only"
+                ],
+                correct: 1, // B
+                explanation: "Smart materials change properties dynamically in response to external inputs (temperature, stress, light)."
+            },
+            {
+                id: 35,
+                question: "Why are semiconductors important in modern microelectronics?",
+                options: [
+                    "Their electrical properties can be controlled",
+                    "Made from timber",
+                    "Perfect conductors",
+                    "Cannot respond to processing"
+                ],
+                correct: 0, // A
+                explanation: "Their electrical conductivity can be precisely tuned via doping and electric fields."
+            },
+            {
+                id: 36,
+                question: "Which is a typical property of ceramics?",
+                options: [
+                    "Excellent conductivity",
+                    "Low melting point",
+                    "High melting point and brittleness",
+                    "Remeltable like thermoplastics"
+                ],
+                correct: 2, // C
+                explanation: "Ceramics feature strong ionic/covalent bonds, leading to high thermal resistance but low ductility (brittle)."
+            },
+            {
+                id: 37,
+                question: "Which property is commonly associated with non-ferrous metals in the lecture?",
+                options: [
+                    "Brittle/transparent",
+                    "Remelted once",
+                    "Polymer chains",
+                    "Lightweight, high conductivity, or corrosion resistance"
+                ],
+                correct: 3, // D
+                explanation: "Non-ferrous metals (like Al, Cu, Ti) are chosen for low weight, high conductivity, or corrosion resistance."
+            },
+            {
+                id: 38,
+                question: "What can thermoplastics do when heated?",
+                options: [
+                    "Cannot change shape",
+                    "They can be repeatedly melted and reshaped",
+                    "Harden irreversibly",
+                    "Turn into mineral ores"
+                ],
+                correct: 1, // B
+                explanation: "Thermoplastics lack permanent crosslinks, allowing reversible melting and reshaping upon heating."
+            },
+            {
+                id: 39,
+                question: "What is the main source of almost all synthetic plastics mentioned in the lecture?",
+                options: [
+                    "Crude oil and natural gas",
+                    "Silica sand and limestone",
+                    "Wool and silk",
+                    "Seawater only"
+                ],
+                correct: 0, // A
+                explanation: "Petrochemicals derived from oil and gas are the primary feedstocks for synthetic polymers."
+            },
+            {
+                id: 40,
+                question: "What does CFRP stand for in the lecture's context?",
+                options: [
+                    "Carbon-fiber-reinforced polymers",
+                    "Copper-formed reinforced plates",
+                    "Ceramic fiber-resin",
+                    "Controlled ferrous product"
+                ],
+                correct: 0, // A
+                explanation: "CFRP is the standard acronym for Carbon-Fiber-Reinforced Polymers."
+            }
+        ];
+
+        // State Variables
+        let currentIndex = 0;
+        let userAnswers = new Array(questionsData.length).fill(null);
+        let bookmarked = new Set();
+        let instantFeedback = false;
+
+        // Option Labels
+        const labels = ["A", "B", "C", "D"];
+
+        // DOM Elements
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const qIdTag = document.getElementById('q-id-tag');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionNumDisp = document.getElementById('question-number-display');
+        const answeredCountDisp = document.getElementById('answered-count-display');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const bookmarkBtn = document.getElementById('bookmark-btn');
+        const instantExplanation = document.getElementById('instant-explanation');
+
+        // Initialize App
+        window.onload = function() {
+            renderQuestion();
+            updateProgress();
+            renderQuestionGrid();
+        };
+
+        function toggleInstantFeedback() {
+            instantFeedback = document.getElementById('instant-feedback-toggle').checked;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questionsData[currentIndex];
+            qIdTag.innerText = q.id;
+            questionText.innerText = q.question;
+
+            // Bookmark status
+            if (bookmarked.has(currentIndex)) {
+                bookmarkBtn.innerHTML = `<i class="fa-solid fa-bookmark text-amber-500"></i>`;
+            } else {
+                bookmarkBtn.innerHTML = `<i class="fa-regular fa-bookmark"></i>`;
+            }
+
+            optionsContainer.innerHTML = '';
+            instantExplanation.classList.add('hidden');
+            instantExplanation.innerHTML = '';
+
+            const selectedOption = userAnswers[currentIndex];
+
+            q.options.forEach((opt, idx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = `w-full p-4 rounded-xl border text-right font-medium transition flex items-center justify-between gap-3 text-sm sm:text-base ${getOptionStyle(idx, selectedOption, q.correct)}`;
+                
+                optBtn.onclick = () => selectOption(idx);
+
+                optBtn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${getOptionLabelStyle(idx, selectedOption, q.correct)}">
+                            ${labels[idx]}
+                        </span>
+                        <span class="en-text font-semibold text-slate-800">${opt}</span>
+                    </div>
+                    ${getOptionIcon(idx, selectedOption, q.correct)}
+                `;
+
+                optionsContainer.appendChild(optBtn);
+            });
+
+            // Instant Feedback Handling
+            if (instantFeedback && selectedOption !== null) {
+                instantExplanation.classList.remove('hidden');
+                if (selectedOption === q.correct) {
+                    instantExplanation.className = "p-4 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-900 text-sm leading-relaxed";
+                    instantExplanation.innerHTML = `<p class="font-bold text-emerald-800 mb-1"><i class="fa-solid fa-circle-check me-2"></i>إجابة صحيحة!</p><p class="en-text">${q.explanation}</p>`;
+                } else {
+                    instantExplanation.className = "p-4 rounded-xl border bg-rose-50 border-rose-200 text-rose-900 text-sm leading-relaxed";
+                    instantExplanation.innerHTML = `<p class="font-bold text-rose-800 mb-1"><i class="fa-solid fa-circle-xmark me-2"></i>إجابة خاطئة!</p><p class="mb-1">الإجابة الصحيحة هي: <strong>${labels[q.correct]}</strong></p><p class="en-text">${q.explanation}</p>`;
+                }
+            }
+
+            // Update Navigation Buttons
+            prevBtn.disabled = currentIndex === 0;
+            if (currentIndex === questionsData.length - 1) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+
+            questionNumDisp.innerText = `السؤال ${currentIndex + 1} من ${questionsData.length}`;
+        }
+
+        function getOptionStyle(idx, selected, correct) {
+            if (instantFeedback && selected !== null) {
+                if (idx === correct) {
+                    return 'bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-500/20';
+                }
+                if (selected === idx && selected !== correct) {
+                    return 'bg-rose-50 border-rose-500 text-rose-900 ring-2 ring-rose-500/20';
+                }
+                return 'bg-white border-slate-200 opacity-60';
+            }
+
+            if (selected === idx) {
+                return 'bg-brand-50 border-brand-500 text-brand-900 ring-2 ring-brand-500/20 font-bold';
+            }
+            return 'bg-white border-slate-200 hover:border-brand-300 hover:bg-slate-50 text-slate-700';
+        }
+
+        function getOptionLabelStyle(idx, selected, correct) {
+            if (instantFeedback && selected !== null) {
+                if (idx === correct) return 'bg-emerald-600 text-white';
+                if (selected === idx && selected !== correct) return 'bg-rose-600 text-white';
+                return 'bg-slate-100 text-slate-500';
+            }
+            if (selected === idx) return 'bg-brand-600 text-white';
+            return 'bg-slate-100 text-slate-600';
+        }
+
+        function getOptionIcon(idx, selected, correct) {
+            if (instantFeedback && selected !== null) {
+                if (idx === correct) return `<i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i>`;
+                if (selected === idx && selected !== correct) return `<i class="fa-solid fa-circle-xmark text-rose-600 text-lg"></i>`;
+            }
+            if (selected === idx) {
+                return `<i class="fa-solid fa-circle-dot text-brand-600 text-lg"></i>`;
+            }
+            return `<i class="fa-regular fa-circle text-slate-300 text-lg"></i>`;
+        }
+
+        function selectOption(idx) {
+            userAnswers[currentIndex] = idx;
+            renderQuestion();
+            updateProgress();
+            renderQuestionGrid();
+        }
+
+        function navigateQuestion(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questionsData.length) currentIndex = questionsData.length - 1;
+            renderQuestion();
+        }
+
+        function bookmarkQuestion() {
+            if (bookmarked.has(currentIndex)) {
+                bookmarked.delete(currentIndex);
+            } else {
+                bookmarked.add(currentIndex);
+            }
+            renderQuestion();
+            renderQuestionGrid();
+        }
+
+        function updateProgress() {
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            answeredCountDisp.innerText = `المجاب: ${answeredCount} / ${questionsData.length}`;
+            const pct = ((currentIndex + 1) / questionsData.length) * 100;
+            progressBar.style.width = `${pct}%`;
+        }
+
+        function toggleQuestionMap() {
+            const modal = document.getElementById('question-map-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function renderQuestionGrid() {
+            const grid = document.getElementById('question-grid');
+            grid.innerHTML = '';
+            questionsData.forEach((q, i) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => {
+                    currentIndex = i;
+                    renderQuestion();
+                    toggleQuestionMap();
+                };
+
+                let bgClass = 'bg-slate-100 text-slate-700 hover:bg-slate-200';
+                if (userAnswers[i] !== null) bgClass = 'bg-emerald-500 text-white font-bold';
+                if (i === currentIndex) bgClass = 'bg-brand-600 text-white font-bold ring-2 ring-brand-600 ring-offset-2';
+
+                btn.className = `w-10 h-10 rounded-xl flex items-center justify-center text-xs transition relative ${bgClass}`;
+                btn.innerText = i + 1;
+
+                if (bookmarked.has(i)) {
+                    btn.innerHTML += `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full"></span>`;
+                }
+
+                grid.appendChild(btn);
+            });
+        }
+
+        function confirmSubmit() {
+            const unanswered = userAnswers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if (!confirm(`لم تقم بالإجابة على ${unanswered} سؤال. هل أنت تأكد من تسليم الاختبار الآن؟`)) {
+                    return;
+                }
+            }
+            calculateResults();
+        }
+
+        function calculateResults() {
+            let score = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === questionsData[i].correct) score++;
+            });
+
+            const percentage = Math.round((score / questionsData.length) * 100);
+
+            document.getElementById('final-score').innerText = score;
+            const pctElem = document.getElementById('score-percentage');
+            pctElem.innerText = `${percentage}%`;
+
+            let feedback = "";
+            if (percentage >= 90) {
+                feedback = "أداء ممتاز جداً! لديك فهم عميق لمفاهيم علم المواد.";
+                pctElem.className = "px-4 py-1.5 rounded-full text-base font-bold bg-emerald-100 text-emerald-800";
+            } else if (percentage >= 75) {
+                feedback = "أداء جيد جداً! أجبت على معظم الأسئلة بشكل صحيح.";
+                pctElem.className = "px-4 py-1.5 rounded-full text-base font-bold bg-blue-100 text-blue-800";
+            } else if (percentage >= 50) {
+                feedback = "أداء متوسط، ننصح بمراجعة المفاهيم والأسئلة الخاطئة لتعزيز معلوماتك.";
+                pctElem.className = "px-4 py-1.5 rounded-full text-base font-bold bg-amber-100 text-amber-800";
+            } else {
+                feedback = "تحتاج إلى مزيد من المراجعة لدراسة مفاهيم علم المواد بشكل أفضل.";
+                pctElem.className = "px-4 py-1.5 rounded-full text-base font-bold bg-rose-100 text-rose-800";
+            }
+
+            document.getElementById('performance-feedback').innerText = feedback;
+
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            filterResults('all');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filterResults(filter) {
+            const container = document.getElementById('results-details-container');
+            container.innerHTML = '';
+
+            const allBtn = document.getElementById('filter-all-btn');
+            const wrongBtn = document.getElementById('filter-wrong-btn');
+
+            if (filter === 'all') {
+                allBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-brand-600 text-white";
+                wrongBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200";
+            } else {
+                wrongBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-rose-600 text-white";
+                allBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200";
+            }
+
+            questionsData.forEach((q, i) => {
+                const userAns = userAnswers[i];
+                const isCorrect = userAns === q.correct;
+
+                if (filter === 'wrong' && isCorrect) return;
+
+                const card = document.createElement('div');
+                card.className = `p-6 rounded-2xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/30' : 'border-rose-200 bg-rose-50/30'} space-y-4 bg-white shadow-sm`;
+
+                let statusBadge = isCorrect 
+                    ? `<span class="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-check"></i> إجابة صحيحة</span>`
+                    : `<span class="px-2.5 py-1 rounded-md bg-rose-100 text-rose-800 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-xmark"></i> إجابة خاطئة</span>`;
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4">
+                        <span class="font-bold text-slate-500 text-xs">Question ${q.id}</span>
+                        ${statusBadge}
+                    </div>
+                    
+                    <h4 class="font-bold text-slate-900 en-text text-base">${q.question}</h4>
+
+                    <div class="space-y-2 text-sm">
+                        <div class="p-3 rounded-xl ${userAns === q.correct ? 'bg-emerald-100 text-emerald-900 font-semibold' : (userAns !== null ? 'bg-rose-100 text-rose-900' : 'bg-slate-100 text-slate-500')} flex justify-between items-center">
+                            <span>إجابتك: <strong class="en-text">${userAns !== null ? labels[userAns] + ') ' + q.options[userAns] : 'لم تجب'}</strong></span>
+                        </div>
+                        
+                        ${!isCorrect ? `
+                            <div class="p-3 rounded-xl bg-emerald-100 text-emerald-900 font-semibold flex justify-between items-center">
+                                <span>الإجابة الصحيحة: <strong class="en-text">${labels[q.correct]}) ${q.options[q.correct]}</strong></span>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="p-3 bg-slate-100 rounded-xl text-xs text-slate-700 space-y-1">
+                        <p class="font-bold text-slate-800">التوضيح الشارح:</p>
+                        <p class="en-text leading-relaxed text-slate-600">${q.explanation}</p>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function restartQuiz() {
+            currentIndex = 0;
+            userAnswers = new Array(questionsData.length).fill(null);
+            bookmarked.clear();
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            renderQuestion();
+            updateProgress();
+            renderQuestionGrid();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
